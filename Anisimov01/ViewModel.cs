@@ -39,23 +39,22 @@ namespace Anisimov01
 
         private static string GetAsianSign(DateTime birthDate)
         {
-            // Коректне обчислення індексу з урахуванням можливих від'ємних значень
             int index = ((birthDate.Year - 4) % 12 + 12) % 12;
             return index switch
             {
-                0  => "Rat",
-                1  => "Ox",
-                2  => "Tiger",
-                3  => "Rabbit",
-                4  => "Dragon",
-                5  => "Snake",
-                6  => "Horse",
-                7  => "Goat",
-                8  => "Monkey",
-                9  => "Rooster",
+                0 => "Rat",
+                1 => "Ox",
+                2 => "Tiger",
+                3 => "Rabbit",
+                4 => "Dragon",
+                5 => "Snake",
+                6 => "Horse",
+                7 => "Goat",
+                8 => "Monkey",
+                9 => "Rooster",
                 10 => "Dog",
                 11 => "Pig",
-                _  => "Impossible date"
+                _ => "Impossible date"
             };
         }
 
@@ -82,32 +81,29 @@ namespace Anisimov01
             };
         }
 
+        private int GetAge(DateTime birthDate)
+        {
+            var today = DateTime.Today;
+            var age = today.Year - birthDate.Year;
+            if (birthDate > today.AddYears(-age))
+                age--;
+
+            if (age is < 0 or > 135)
+            {
+                OnDataInputValidate("Impossible age!");
+                age = age < 0 ? 0 : 135;
+            }
+
+            if (birthDate.Month == today.Month && birthDate.Day == today.Day)
+            {
+                OnDataInputValidate("Happy birthday!");
+            }
+
+            return age;
+        }
 
         public string WesternSignString => GetWesternSign(BirthDate);
         public string AsianSignString => GetAsianSign(BirthDate);
-
-        public int Age
-        {
-            get
-            {
-                var today = DateTime.Today;
-                var age = today.Year - _model.BirthDate.Year;
-                if (_model.BirthDate > today.AddYears(-age))
-                    age--;
-
-                if (age is < 0 or > 135)
-                {
-                    OnDataInputValidate("Impossible age!");
-                    age = age < 0 ? 0 : 135;
-                }
-
-                if (_model.BirthDate.Month == today.Month && _model.BirthDate.Day == today.Day)
-                {
-                    OnDataInputValidate("Happy birthday!");
-                }
-
-                return age;
-            }
-        }
+        public int Age => GetAge(BirthDate);
     }
 }

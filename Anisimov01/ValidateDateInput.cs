@@ -5,5 +5,6 @@
         public string ErrorMsg { get; } = errorMsg;
     }
 
-    public delegate void ValidateDateInputHandler(object? sender, ValidateDateInput e);
+    public delegate void 
+        ValidateDateInputHandler(object? sender, ValidateDateInput e);
 }
