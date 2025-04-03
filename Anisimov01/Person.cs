@@ -1,4 +1,7 @@
-﻿namespace Anisimov
+﻿using System;
+using System.Text.RegularExpressions;
+
+namespace Anisimov
 {
     public class Person
     {
@@ -14,6 +17,9 @@
 
         public Person(string firstName, string lastName, string email, DateTime dateOfBirth)
         {
+            ValidateBirthDate(dateOfBirth);
+            ValidateEmail(email);
+
             FirstName = firstName;
             LastName = lastName;
             Email = email;
@@ -23,6 +29,40 @@
             SunSign = CalculateSunSign();
             ChineseSign = CalculateChineseSign();
             IsBirthday = CalculateIsBirthday();
+        }
+
+        public Person(string firstName, string lastName, string email)
+            : this(firstName, lastName, email, DateTime.MinValue) { }
+
+        public Person(string firstName, string lastName, DateTime dateOfBirth)
+            : this(firstName, lastName, string.Empty, dateOfBirth) { }
+
+        private void ValidateBirthDate(DateTime dateOfBirth)
+        {
+            if (dateOfBirth > DateTime.Today)
+            {
+                throw new FutureBirthDateException();
+            }
+
+            int age = DateTime.Today.Year - dateOfBirth.Year;
+            if (DateTime.Today.DayOfYear < dateOfBirth.DayOfYear)
+                age--;
+
+            if (age > 135)
+            {
+                throw new TooOldBirthDateException();
+            }
+        }
+
+        private void ValidateEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return;
+
+            if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+            {
+                throw new InvalidEmailException();
+            }
         }
 
         private bool CalculateIsAdult()
@@ -71,4 +111,3 @@
         }
     }
 }
-

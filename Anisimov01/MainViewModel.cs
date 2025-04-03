@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace Anisimov
 {
@@ -68,22 +68,6 @@ namespace Anisimov
             {
                 person = await Task.Run(() =>
                 {
-                    if (!Regex.IsMatch(Email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
-                        throw new Exception("Невірний формат електронної пошти.");
-
-                    if (BirthDate == null)
-                        throw new Exception("Дата народження не вибрана.");
-
-                    if (BirthDate > DateTime.Today)
-                        throw new Exception("Дата народження не може бути в майбутньому.");
-
-                    int age = DateTime.Today.Year - BirthDate.Value.Year;
-                    if (DateTime.Today.DayOfYear < BirthDate.Value.DayOfYear)
-                        age--;
-
-                    if (age < 0 || age > 135)
-                        throw new Exception("Вік користувача має бути в межах від 0 до 135 років.");
-
                     return new Person(FirstName, LastName, Email, BirthDate.Value);
                 });
 
@@ -102,6 +86,21 @@ namespace Anisimov
                          $"IsBirthday: {person.IsBirthday}";
 
                 MessageBox.Show(Result, "Результат", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (FutureBirthDateException ex)
+            {
+                MessageBox.Show(ex.Message, "Помилка дати", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Result = string.Empty;
+            }
+            catch (TooOldBirthDateException ex)
+            {
+                MessageBox.Show(ex.Message, "Помилка дати", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Result = string.Empty;
+            }
+            catch (InvalidEmailException ex)
+            {
+                MessageBox.Show(ex.Message, "Помилка пошти", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Result = string.Empty;
             }
             catch (Exception ex)
             {
